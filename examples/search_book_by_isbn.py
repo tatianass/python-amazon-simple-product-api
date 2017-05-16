@@ -10,9 +10,9 @@ def writeToJSONFile(path, fileName, data):
 
 keys = []
 with open('../rootkey.csv', 'r') as keysfile:
-	spamreader = csv.reader(keysfile, delimiter=' ', quotechar='|')
-	for row in spamreader:
-		keys.extend(row)
+    spamreader = csv.reader(keysfile, delimiter=' ', quotechar='|')
+    for row in spamreader:
+        keys.extend(row)
 
 AMAZON_ACCESS_KEY = keys[0]
 AMAZON_SECRET_KEY = keys[1]
@@ -26,30 +26,22 @@ with open('ff-books.json') as data_file:
     ff_books = json.load(data_file)
     for book in ff_books:
         if(book['isbn']):
+            try:
                 isbn = book['isbn']
-                print(isbn)
-                try:
-                        item = amazon.lookup(ItemId=isbn, IdType='ISBN', SearchIndex='Books')
-
-                        item_link = ''
-                        if(type(item) is list):
-                                item_link = item[0].detail_page_url
-                        else:
-                                item_link = item.detail_page_url
-                                
-                        i = {}
-                        i['isbn'] = book.isbn
-                        i['isbn13'] = book.isbn13
-                        i['title'] = book.title
-                        i['author'] = book.authors[0].name
-                        i['link'] = book.link
-                        i['amazon-link'] = item_link
-                        data.append(i)
-                except Exception:
-                        print(Exception)
-                        ff_books.remove(book)
-                        pass
+                item = amazon.lookup(ItemId=isbn, IdType='ISBN', SearchIndex='Books')
+                item_link = ''
+                if(type(item) is list):
+                        item_link = item[0].detail_page_url
+                else:
+                        item_link = item.detail_page_url
+                        
+                i = {}
+                i['title'] = book['title']
+                i['author'] = book['author']
+                i['link'] = book['link']
+                i['amazon'] = item_link
+                data.append(i)
+            except Exception:
+                pass
                 
 writeToJSONFile('./','amazon',data)
-
-
